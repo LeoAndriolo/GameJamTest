@@ -1,7 +1,7 @@
 function preload() {
   this.load.image("player", "assets/repl.png");
-}
-
+}//teste
+//
 function create() {
   this.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
   this.a = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
