@@ -94,7 +94,7 @@ function update() {
     personagem.setVelocityY(0);//personagem parado
   }
   //console.log(fundo.y);
-  if (fundo.y < -2000) {
+  if (fundo.y < -2100) {
     fundo.y = 2400;
   }
 }
