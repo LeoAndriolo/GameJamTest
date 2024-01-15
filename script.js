@@ -81,7 +81,7 @@
   const config = {
     type: Phaser.AUTO, // Canva ou WebGL
     width: 600,//largura
-    height: 400,//altura
+    height: 800,//altura
     backgroundColor: '#f9f9f9',//cor de fundo
     autoCenter: Phaser.Scale.CENTER_BOTH,//centraliza o jogo
     physics: { //fisica
