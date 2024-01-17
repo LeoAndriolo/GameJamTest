@@ -3,6 +3,7 @@ function preload() {
   this.load.image('ovni', 'assets/ovni.png');// Carrega a imagem do obstáculo
   this.load.image('meteoro', 'assets/meteoro.png');// Carrega a imagem do meteoro
   this.load.image('personagem', 'assets/astronauta.png');// Carrega a imagem do personagem
+  this.load.image('red', 'assets/red.png'); // Carrega o atlas de partículas
 }
 
 function create() {
@@ -11,6 +12,20 @@ function create() {
     .setScale(4)
     .setVelocityY(-400);// Cria o elemento de fundo
 
+  // Adiciona o atlas de partículas ao personagem
+  this.flame = this.add.particles(0, 0, 'red',
+    {
+        //frame: 'white',
+        color: [ 0xc90076, 0xc27ba0, 0x9f0404 ],
+        colorEase: 'quad.out',
+        //lifespan: 2400,
+        angle: { min: -100, max: -80 },
+        scale: { start: 0.40, end: 0, ease: 'sine.out' },
+        speed: 100,
+        //advance: 2000,
+        blendMode: 'ADD'
+    });
+  
   var ovni = this.physics.add.group(
     {
       defaultKey: 'ovni',
@@ -62,7 +77,12 @@ function create() {
   this.textVidas = this.add.text(16, 16, 'Vida: ' + this.vida);
   // this.vida = vida;
 
-  this.physics.add.overlap(this.meteoro, this.personagem, this.reduceLife , null, this)
+  this.physics.add.overlap(this.meteoro, this.personagem, this.reduceLife , null, this);
+
+  // this.flame.startFollow(personagem); // Adiciona rastro rosa ao personagem
+  
+
+  
 }
 
 function reduceLife(){
