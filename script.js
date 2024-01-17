@@ -37,7 +37,8 @@ function create() {
     .setScale(0.75)
     .setSize(160, 5)
     .setOffset(0, 0)
-    .setGravity(0, -300); // Cria o elemento de meteoro
+    .setGravity(0, -300)
+    .setMaxVelocity(0, 300);; // Cria o elemento de meteoro
 
   // var meteoro = this.physics.add.group(
   //   {
@@ -85,16 +86,6 @@ function create() {
   this.flame.startFollow(personagem); // Adiciona rastro rosa ao personagem
 }
 
-function reduceLife() {
-  this.vida--;
-  this.textVidas.setText("Vida: " + this.vida);
-  this.personagem.setTint(0xff00ff, 0xff0000);
-  // this.personagem.clearTint();
-  // if(this.vida <= 0){
-  //   this.scene.start('GameOver');
-  // }
-}
-
 function update() {
   // reduceLife(){
   //   this.vida--;
@@ -108,7 +99,8 @@ function update() {
   var fundo = this.fundo;
   let cursors = this.input.keyboard.createCursorKeys(); //cria as setas do teclado
   var personagem = this.personagem; //atribui o personagem a uma variavel
-
+  var meteoro = this.meteoro; //atribui o meteoro a uma variavel
+  
   if (cursors.left.isDown || this.a.isDown) {
     //se a seta esquerda ou a for pressionada
     personagem.setVelocityX(-300); //personagem move para a esquerda, com velocidade de 300 pixels por segundo
@@ -120,6 +112,22 @@ function update() {
   //console.log(fundo.y);
   if (fundo.y < -1600) {
     fundo.y = 2000;
+  }
+
+  if (meteoro.y <= -50) {
+    meteoro.setY(850);
+    meteoro.setX(Phaser.Math.Between(50, 550));
+  }
+}
+
+function reduceLife() {
+  this.vida--;
+  this.textVidas.setText("Vida: " + this.vida);
+  this.personagem.setTint(0xff00ff, 0xff0000);
+  // this.personagem.clearTint();
+  if(this.vida <= 0){
+    this.textVidas.setText("Vida: Game Over");
+    this.scene.pause();
   }
 }
 
