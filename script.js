@@ -115,7 +115,7 @@ const config = {
       gravity: {
         y: 0 //gravidade
       },
-      debug: true
+      debug: false
     }
   },
   scene: {
