@@ -80,7 +80,7 @@ function create() {
     this.personagem,
     this.reduceLife,
     null,
-    this,
+    this
   );
 
   this.flame.startFollow(personagem); // Adiciona rastro rosa ao personagem
@@ -115,8 +115,8 @@ function update() {
   }
 
   if (meteoro.y <= -50) {
-    meteoro.setY(850);
-    meteoro.setX(Phaser.Math.Between(50, 550));
+    meteoro.setY(850); // meteoro volta para baixo
+    meteoro.setX(Phaser.Math.Between(50, 550)); // posição aleatória do meteoro
   }
 }
 
@@ -144,7 +144,7 @@ const config = {
       gravity: {
         y: 0, //gravidade
       },
-      debug: false,
+      debug: true,
     },
   },
   scene: {
