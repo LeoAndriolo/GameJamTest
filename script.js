@@ -1,22 +1,85 @@
 function preload() {
-  this.load.image("front", "assets/front.jpg");
+  this.load.image("background", "assets/background.png");
   this.load.image("fundo", "assets/fundo.png"); // Carrega a imagem de fundo
   this.load.image("ovni", "assets/ovni.png"); // Carrega a imagem do obstáculo
   this.load.image("meteoro", "assets/meteoro.png"); // Carrega a imagem do meteoro
   this.load.image("personagem", "assets/astronauta.png"); // Carrega a imagem do personagem
   this.load.image("red", "assets/red.png"); // Carrega o atlas de partículas
-  this.load.audio("theme", "assets/audio/DavidKBD_Nebula Run.ogg");
+  this.load.audio("start_theme", "assets/audio/DavidKBD_Cosmic_Journey.ogg");
+  this.load.audio("play_theme", "assets/audio/DavidKBD_Nebula_Run.ogg");
 }
 
 function create() {
+  // Start scene
+  //====================================================
+  // Load background
+  this.background = this.add
+    .image(0, 0, "background")
+    .setOrigin(0, 0)
+    .setDepth(2);
+  // Load Music
+  const start_theme = this.sound.add("start_theme", { volume: 0.1 });
+  const play_theme = this.sound.add("play_theme", { volume: 0.1 });
+  // Play Start Theme
+  start_theme.play();
+  // Instruction Text
+  var tileText = this.add
+    .text(this.sys.scale.width / 2, this.sys.scale.height - 400, "Cosmic Jellyfall")//pq sys??
+    .setOrigin(0.5)
+    .setDepth(2)
+    .setScale(2)
+    .setColor("#e004dd")
+    .setFont("40px Arial")
+    .setAlign("center");
+  
+  // Start Button
+  var startButtonBox = this.add.rectangle(this.sys.scale.width / 2, this.sys.scale.height - 300, 290, 50, 0x000000, 1);
+  startButtonBox.setInteractive().setDepth(2);
+  var startbuttonText = this.add.text(this.sys.scale.width / 2, this.sys.scale.height - 300, "Start Game").setOrigin(0.5).setDepth(2);
+  // Instruction Text
+  var instructions = ["Use A or W or Arrows to move",
+                      "",
+                      "Help the Astronaut avoid the meteors"];
+  var instructionsText = this.add
+    .text(this.sys.scale.width / 2, this.sys.scale.height - 230, instructions)
+    .setOrigin(0.5)
+    .setDepth(2)
+    .setAlign("center");
+  // Pause physics logic
+  this.physics.pause();
+  // Run game
+  startButtonBox.on('pointerdown', () => {
+    this.sound.pauseAll();  
+    this.background.destroy();
+    startButtonBox.destroy();
+    startbuttonText.destroy();
+    instructionsText.destroy();
+    tileText.destroy();
+    // this.background.setDepth(0);
+    // startButtonBox.setDepth(0);
+    // startbuttonText.setDepth(0);
+    this.physics.resume();
+    play_theme.play();
+  });
+
+  // Hover button properties
+  startButtonBox.on('pointerover', () => {
+      startButtonBox.setFillStyle(0x000000, 1);
+      this.input.setDefaultCursor('pointer');
+  });
+
+  startButtonBox.on('pointerout', () => {
+      startButtonBox.setFillStyle(0x222222, 1);
+      this.input.setDefaultCursor('default');
+  });
+
+  // Play scene
+  //====================================================
   var fundo = this.physics.add
     .image(300, 2000, "fundo")
     .setScale(4)
+    .setDepth(1)
     .setVelocityY(-400); // Cria o elemento de fundo
-
-  // Adiciona o som de fundo
-  const music = this.sound.add("theme", { volume: 0.1 });
-  music.play();
 
   // Adiciona o atlas de partículas ao personagem
   this.flame = this.add.particles(0, 0, "red", {
@@ -28,23 +91,24 @@ function create() {
     scale: { start: 0.4, end: 0, ease: "sine.out" },
     speed: 100,
     //advance: 2000,
-    blendMode: "ADD",
-  });
+    blendMode: "ADD"
+  }).setDepth(1);
 
   var ovni = this.physics.add.group({
     defaultKey: "ovni",
     collideWorldBounds: false,
   }); //adicionar mais da mesma imagem
-  ovni.create(100, 200).setGravity(0, -300).setScale(0.75); //cria o ovni
-  ovni.create(500, 250).setGravity(0, -300).setScale(0.75); //cria o ovni
+  // ovni.create(100, 200).setGravity(0, -300).setScale(0.75); //cria o ovni
+  // ovni.create(500, 250).setGravity(0, -300).setScale(0.75); //cria o ovni
 
   var meteoro = this.physics.add
     .image(100, 600, "meteoro")
     .setScale(0.75)
-    .setSize(160, 5)
+    .setSize(160, 5) // Tamanho da colisão
     .setOffset(0, 0)
+    .setDepth(1)
     .setGravity(0, -300)
-    .setMaxVelocity(0, 600); // Cria o elemento de meteoro
+    .setMaxVelocity(0, 400); // Cria o elemento de meteoro
 
   // var meteoro = this.physics.add.group(
   //   {
@@ -59,7 +123,8 @@ function create() {
     .setScale(0.5)
     .setSize(160, 5)
     .setOffset(0, 160)
-    .setDrag(300, 300)
+    .setDrag(300, 300) // Arrasto/Movimento tipo gelo do personagem
+    .setDepth(1)
     .setMaxVelocity(600, 600); //cria o personagem
   personagem.setCollideWorldBounds(true); //personagem não sair para fora da plataforma
 
@@ -77,7 +142,7 @@ function create() {
   // this.physics.add.collider(this.personagem, this.meteoro);
 
   this.vida = 3;
-  this.textVidas = this.add.text(16, 16, "Vida: " + this.vida);
+  this.textVidas = this.add.text(16, 16, "Vida: " + this.vida).setDepth(1);
   // this.vida = vida;
 
   this.physics.add.overlap(
@@ -92,8 +157,8 @@ function create() {
 
   // Reset Button
   const buttonBox = this.add.rectangle(this.sys.scale.width / 2, this.sys.scale.height - 300, 290, 50, 0x000000, 1);
-  buttonBox.setInteractive();
-  const buttonText = this.add.text(this.sys.scale.width / 2, this.sys.scale.height - 300, "Restart").setOrigin(0.5);
+  buttonBox.setInteractive().setDepth(1);
+  const buttonText = this.add.text(this.sys.scale.width / 2, this.sys.scale.height - 300, "Restart").setOrigin(0.5).setDepth(1);
 
   buttonBox.on('pointerdown', () => {
       this.scene.restart();
@@ -101,13 +166,13 @@ function create() {
   
   // Hover button properties
   buttonBox.on('pointerover', () => {
-      buttonBox.setFillStyle(0x222222, 1);
-      this.input.setDefaultCursor('pointer');
+      buttonBox.setFillStyle(0x222222, 1); // Muda cor botão para cinza
+      this.input.setDefaultCursor('pointer'); // Muda ícone do mouse para mãozinha
   });
 
   buttonBox.on('pointerout', () => {
-      buttonBox.setFillStyle(0x000000, 1);
-      this.input.setDefaultCursor('default');
+      buttonBox.setFillStyle(0x000000, 1); // Muda cor do botão para branco
+      this.input.setDefaultCursor('default'); // Muda ícone do mouse para seta
   });
 
   // Hide Button
@@ -146,12 +211,17 @@ function update() {
 
   if (this.vida <= 0) {
     this.add
-      .text(100, 400, "Game Over")
-      .setFontFamily("Poppins")
-      .setFontSize(64)
-      .setColor("#ff0000");
+      .text(this.sys.scale.width / 2, this.sys.scale.height - 370,  "Game Over")
+      .setOrigin(0.5)
+      // .setFontSize(64)
+      .setDepth(1)
+      .setScale(2)
+      .setColor("#e00434")
+      .setFont("40px Arial")
+      .setAlign("center");
+
+    
     this.physics.pause();
-    this.sound
     this.sound.pauseAll();
     buttonBox.setAlpha(1);
     buttonText.setAlpha(1);
