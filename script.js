@@ -1,18 +1,28 @@
 function preload() {
+  // Imagens
   this.load.image("background", "assets/background.png");
   this.load.image("fundo", "assets/fundo.png"); // Carrega a imagem de fundo
   this.load.image("ovni", "assets/ovni.png"); // Carrega a imagem do obstáculo
   this.load.image("meteoro", "assets/meteoro.png"); // Carrega a imagem do meteoro
-  this.load.image("personagem", "assets/astronauta.png"); // Carrega a imagem do personagem
-  this.load.image("red", "assets/red.png"); // Carrega o atlas de partículas
+  this.load.image("personagem", "assets/astronauta.png"); // Personagem
+  this.load.image("red", "assets/red.png");
+  this.load.image("geleia", "assets/geleia.png");
+  this.load.image("titulo", "assets/titulo.png");
+  // Áudio
   this.load.audio("start_theme", "assets/audio/DavidKBD_Cosmic_Journey.ogg");
   this.load.audio("play_theme", "assets/audio/DavidKBD_Nebula_Run.ogg");
+  
 }
 
 function create() {
   // Start scene
   //====================================================
-  // Load background
+  // Load title and background
+  var titulo = this.titulo = this.add
+  .image(this.sys.scale.width / 2, this.sys.scale.height - 380, "titulo")
+  .setOrigin(0.5)
+  .setScale(0.9)
+  .setDepth(3);
   this.background = this.add
     .image(0, 0, "background")
     .setOrigin(0, 0)
@@ -22,16 +32,7 @@ function create() {
   const play_theme = this.sound.add("play_theme", { volume: 0.1 });
   // Play Start Theme
   start_theme.play();
-  // Instruction Text
-  var tileText = this.add
-    .text(this.sys.scale.width / 2, this.sys.scale.height - 400, "Cosmic Jellyfall")//pq sys??
-    .setOrigin(0.5)
-    .setDepth(2)
-    .setScale(2)
-    .setColor("#e004dd")
-    .setFont("40px Arial")
-    .setAlign("center");
-  
+
   // Start Button
   var startButtonBox = this.add.rectangle(this.sys.scale.width / 2, this.sys.scale.height - 300, 290, 50, 0x000000, 1);
   startButtonBox.setInteractive().setDepth(2);
@@ -54,7 +55,7 @@ function create() {
     startButtonBox.destroy();
     startbuttonText.destroy();
     instructionsText.destroy();
-    tileText.destroy();
+    titulo.destroy();
     // this.background.setDepth(0);
     // startButtonBox.setDepth(0);
     // startbuttonText.setDepth(0);
@@ -110,13 +111,14 @@ function create() {
     .setGravity(0, -300)
     .setMaxVelocity(0, 400); // Cria o elemento de meteoro
 
-  // var meteoro = this.physics.add.group(
-  //   {
-  //     defaultKey: 'meteoro',
-  //     collideWorldBounds: false
-  //   }
-  // );//adicionar mais da mesma imagem
-  // meteoro.create(300, 400).setGravity(0, -300).setScale(0.75);
+  var geleia = this.physics.add
+    .image(400, 800, "geleia")
+    .setScale(0.75)
+    .setSize(80, 40)
+    .setOffset(0, 0)
+    .setDepth(1)
+    .setGravity(0, -300)
+    .setMaxVelocity(0, 400); //
 
   var personagem = this.physics.add
     .image(300, 80, "personagem")
@@ -127,12 +129,12 @@ function create() {
     .setDepth(1)
     .setMaxVelocity(600, 600); //cria o personagem
   personagem.setCollideWorldBounds(true); //personagem não sair para fora da plataforma
-
-  // this.chao = chao;//atribui o chão a uma variável
+  
   this.fundo = fundo; //atribui o fundo a uma variável
   this.meteoro = meteoro; //atribui o meteoro a uma variável
   this.personagem = personagem; //atribui o personagem a uma variavel
   this.ovni = ovni; //atribui a plataforma a uma variavel
+  this.geleia = geleia; //atribui a geleia a uma variavel
   //this.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);//seta para cima
   this.a = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); //seta para esquerda
   // this.s = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);//seta para baixo
@@ -149,6 +151,14 @@ function create() {
     this.meteoro,
     this.personagem,
     this.reduceLife,
+    null,
+    this,
+  );
+
+  this.physics.add.overlap(
+    this.geleia,
+    this.personagem,
+    this.powerUp,
     null,
     this,
   );
@@ -190,6 +200,8 @@ function update() {
   var meteoro = this.meteoro; //atribui o meteoro a uma variavel
   var buttonBox = this.buttonBox;
   var buttonText = this.buttonText;
+  var geleia = this.geleia;
+  var vida = this.vida;
   
   if (cursors.left.isDown || this.a.isDown) {
     //se a seta esquerda ou a for pressionada
@@ -199,17 +211,22 @@ function update() {
     personagem.setVelocityX(300); //personagem move para a direita, com velocidade de 300 pixels por segundo
   }
   
-  //console.log(fundo.y);
+  // Ajusta a velocidade do fundo
   if (fundo.y < -1600) {
     fundo.y = 2000;
   }
-
+  // Ajusta a posição do meteoro
   if (meteoro.y <= -50) {
     meteoro.setY(850); // meteoro volta para baixo
     meteoro.setX(Phaser.Math.Between(50, 550)); // posição aleatória do meteoro
   }
+  if (geleia.y <= -50) {
+    geleia.setAlpha(1);
+    geleia.setY(Phaser.Math.Between(850, 1050)); // meteoro volta para baixo
+    geleia.setX(Phaser.Math.Between(50, 550)); // posição aleatória do meteoro
+  }
 
-  if (this.vida <= 0) {
+  if (vida <= 0) {
     this.add
       .text(this.sys.scale.width / 2, this.sys.scale.height - 370,  "Game Over")
       .setOrigin(0.5)
@@ -227,6 +244,11 @@ function update() {
     buttonText.setAlpha(1);
     
   }
+
+  if (vida > 3) {
+    this.vida = 3;
+    this.textVidas.setText("Vida: " + this.vida);
+  }
   
 }
 
@@ -234,8 +256,39 @@ function reduceLife() {
   this.vida--;
   this.textVidas.setText("Vida: " + this.vida);
   this.personagem.setTint(0xff00ff, 0xff0000);
+  this.personagem.setScale(0.55);
+  this.time.delayedCall(300, this.clearTint, [], this);
 
 }
+
+function clearTint(){
+  this.personagem.clearTint();
+  this.personagem.setScale(0.5);
+}
+
+function powerUp() {
+  this.vida++;
+  this.textVidas.setText("Vida: " + this.vida);
+  this.personagem.setTint(0x42f545, 0x32c0f0);
+  this.personagem.setScale(0.55);
+  this.time.delayedCall(300, this.clearTint, [], this);
+  // this.geleia.setAlpha(0);
+  // this.geleia.destroy();
+  this.geleia.disableBody(true, true);
+  this.geleia.enableBody(true,
+                         Phaser.Math.Between(50, 550), // Random x
+                         Phaser.Math.Between(1000, 1150), // Random y
+                         true, true);
+}
+
+// function flashColor(color) {
+//     this.setTint(color);
+//     this.scene.time.addEvent({
+//            delay: 500,
+//            callback: function(){ this.clearTint(); },
+//            callbackScope: this,
+//         });
+// }
 
 const config = {
   type: Phaser.AUTO, // Canva ou WebGL
@@ -255,7 +308,9 @@ const config = {
   },
   scene: {
     extend: {
-      reduceLife: reduceLife// <- function added to the scene
+      reduceLife: reduceLife,// <- function added to the scene
+      powerUp: powerUp,
+      clearTint: clearTint
     },
     preload: preload,
     create: create,
