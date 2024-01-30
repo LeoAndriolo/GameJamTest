@@ -1,23 +1,26 @@
-// Preload - function that is called before the game starts to load assets
+// Preload - função que é chamada antes do início do jogo para carregar assets
 
 function preload() {
   // Imagens
-  this.load.image("background", "assets/background.png");
-  this.load.image("fundo", "assets/fundo.png"); // Carrega a imagem de fundo
-  this.load.image("ovni", "assets/ovni.png"); // Carrega a imagem do obstáculo
-  this.load.image("meteoro", "assets/meteoro.png"); // Carrega a imagem do meteoro
-  this.load.image("personagem", "assets/astronauta.png"); // Personagem
-  this.load.image("red", "assets/red.png");
-  this.load.image("geleia", "assets/geleia.png");
-  this.load.image("titulo", "assets/titulo.png");
+  this.load.image("background", "assets/background.png"); // Fundo de início
+  this.load.image("fundo", "assets/fundo.png"); // Fundo do gameplay
+  this.load.image("ovni", "assets/ovni.png"); // Objeto Ovni
+  this.load.image("meteoro", "assets/meteoro.png"); // Objeto Meteoro
+  this.load.image("personagem", "assets/astronauta.png"); // Objeto Personagem
+  this.load.image("red", "assets/red.png"); // Efeito rosa
+  this.load.image("geleia", "assets/geleia.png"); // Objeto Geleia
+  this.load.image("titulo", "assets/titulo.png"); // Imagem do título
   // Áudio
-  this.load.audio("start_theme", "assets/audio/DavidKBD_Cosmic_Journey.ogg");
-  this.load.audio("play_theme", "assets/audio/DavidKBD_Nebula_Run.ogg");
+  this.load.audio("start_theme", "assets/audio/DavidKBD_Cosmic_Journey.ogg"); // Música de início
+  this.load.audio("play_theme", "assets/audio/DavidKBD_Nebula_Run.ogg"); // Música de gameplay
   
 }
 
+// Create - função que é chamada uma única vez, no início do jogo
+
 function create() {
-  // Start scene
+  //====================================================
+  // Tela de início
   //====================================================
   // Load title and background
   var titulo = this.titulo = this.add
@@ -32,10 +35,10 @@ function create() {
   // Load Music
   const start_theme = this.sound.add("start_theme", { volume: 0.1 });
   const play_theme = this.sound.add("play_theme", { volume: 0.1 });
-  // Play Start Theme
+  // Play Start Theme Music
   start_theme.play();
 
-  // Start Button
+  // Create Start Button
   var startButtonBox = this.add.rectangle(this.sys.scale.width / 2, this.sys.scale.height - 300, 290, 50, 0x000000, 1);
   startButtonBox.setInteractive().setDepth(2);
   var startbuttonText = this.add.text(this.sys.scale.width / 2, this.sys.scale.height - 300, "Start Game").setOrigin(0.5).setDepth(2);
@@ -50,7 +53,7 @@ function create() {
     .setAlign("center");
   // Pause physics logic
   this.physics.pause();
-  // Run game
+  // Run game on button click
   startButtonBox.on('pointerdown', () => {
     this.sound.pauseAll();  
     this.background.destroy();
@@ -75,17 +78,19 @@ function create() {
       startButtonBox.setFillStyle(0x222222, 1);
       this.input.setDefaultCursor('default');
   });
-
-  // Play scene
+  
   //====================================================
-  var fundo = this.physics.add
+  // Tela de Gameplay
+  //====================================================
+  var fundo = this.physics.add // Cria o elemento de fundo
     .image(300, 2000, "fundo")
     .setScale(4)
     .setDepth(1)
-    .setVelocityY(-400); // Cria o elemento de fundo
+    .setVelocityY(-400); 
 
-  // Adiciona o atlas de partículas ao personagem
-  this.flame = this.add.particles(0, 0, "red", {
+  // Adiciona o efeito de partículas rosa ao personagem
+  // Obs: É necessário consultar a API para verificar os atributos comentados 
+  this.flame = this.add.particles(0, 0, "red", { 
     //frame: 'white',
     color: [0xc90076, 0xc27ba0, 0x9f0404],
     colorEase: "quad.out",
@@ -97,13 +102,24 @@ function create() {
     blendMode: "ADD"
   }).setDepth(1);
 
-  var ovni = this.physics.add.group({
+  // Cria um grupo de objetos Ovni
+  var ovni = this.physics.add.group({ // Permite adicionar mais da mesma imagem
     defaultKey: "ovni",
     collideWorldBounds: false,
-  }); //adicionar mais da mesma imagem
-  // ovni.create(100, 200).setGravity(0, -300).setScale(0.75); //cria o ovni
+  }); 
+  // Cria um objeto Meteoro
+  ovni.create(100, 200)
+      .setGravity(0, -300)
+      .setScale(0.5)
+      .setDepth(1)
+      .setSize(160, 5) // Tamanho da colisão
+      .setOffset(0, 0)
+      .setDepth(1)
+      .setGravity(0, -300)
+      .setMaxVelocity(0, 400); 
   // ovni.create(500, 250).setGravity(0, -300).setScale(0.75); //cria o ovni
 
+  // Cria um objeto Meteoro
   var meteoro = this.physics.add
     .image(100, 600, "meteoro")
     .setScale(0.75)
@@ -113,6 +129,7 @@ function create() {
     .setGravity(0, -300)
     .setMaxVelocity(0, 400); // Cria o elemento de meteoro
 
+  // Cria um objeto Geleia
   var geleia = this.physics.add
     .image(400, 800, "geleia")
     .setScale(0.75)
@@ -122,6 +139,7 @@ function create() {
     .setGravity(0, -300)
     .setMaxVelocity(0, 400); //
 
+  // Cria um objeto Personagem
   var personagem = this.physics.add
     .image(300, 80, "personagem")
     .setScale(0.5)
@@ -137,18 +155,25 @@ function create() {
   this.personagem = personagem; //atribui o personagem a uma variavel
   this.ovni = ovni; //atribui a plataforma a uma variavel
   this.geleia = geleia; //atribui a geleia a uma variavel
-  //this.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);//seta para cima
+
+  // Atribuição de inputs para o Personagem
+  // Horizontais
   this.a = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A); //seta para esquerda
-  // this.s = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);//seta para baixo
   this.d = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D); //seta para direita
-  
-  this.physics.add.collider(this.personagem, this.ovni);
+  // Verticais (Não usados)
+  // this.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);//seta para cima
+  // this.s = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);//seta para baixo
+
+  // Adição de colisão entre objetos (Não usado)
+  // this.physics.add.collider(this.personagem, this.ovni);
   // this.physics.add.collider(this.personagem, this.meteoro);
 
+  // Inicialização da variável de Vida do Personagem
   this.vida = 3;
   this.textVidas = this.add.text(16, 16, "Vida: " + this.vida).setDepth(1);
   // this.vida = vida;
 
+  // Adição de sobreposição entre objetos Meteoro e Personagem
   this.physics.add.overlap(
     this.meteoro,
     this.personagem,
@@ -157,6 +182,16 @@ function create() {
     this,
   );
 
+  // Adição de sobreposição entre objetos Ovni e Personagem
+  this.physics.add.overlap(
+    this.ovni,
+    this.personagem,
+    this.reduceLife,
+    null,
+    this,
+  );
+  
+  // Adição de sobreposição entre objetos Geleia e Personagem
   this.physics.add.overlap(
     this.geleia,
     this.personagem,
@@ -305,7 +340,7 @@ const config = {
       gravity: {
         y: 0, //gravidade
       },
-      debug: false,
+      debug: true,
     },
   },
   scene: {
