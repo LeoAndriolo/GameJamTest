@@ -13,7 +13,6 @@ function preload() {
   // Áudio
   this.load.audio("start_theme", "assets/audio/DavidKBD_Cosmic_Journey.ogg"); // Música de início
   this.load.audio("play_theme", "assets/audio/DavidKBD_Nebula_Run.ogg"); // Música de gameplay
-  
 }
 
 // Create - função que é chamada uma única vez, no início do jogo
@@ -23,11 +22,11 @@ function create() {
   // Tela de início
   //====================================================
   // Load title and background
-  var titulo = this.titulo = this.add
-  .image(this.sys.scale.width / 2, this.sys.scale.height - 380, "titulo")
-  .setOrigin(0.5)
-  .setScale(0.9)
-  .setDepth(3);
+  var titulo = (this.titulo = this.add
+    .image(this.sys.scale.width / 2, this.sys.scale.height - 380, "titulo")
+    .setOrigin(0.5)
+    .setScale(0.9)
+    .setDepth(3));
   this.background = this.add
     .image(0, 0, "background")
     .setOrigin(0, 0)
@@ -39,13 +38,25 @@ function create() {
   start_theme.play();
 
   // Create Start Button
-  var startButtonBox = this.add.rectangle(this.sys.scale.width / 2, this.sys.scale.height - 300, 290, 50, 0x000000, 1);
+  var startButtonBox = this.add.rectangle(
+    this.sys.scale.width / 2,
+    this.sys.scale.height - 300,
+    290,
+    50,
+    0x000000,
+    1,
+  );
   startButtonBox.setInteractive().setDepth(2);
-  var startbuttonText = this.add.text(this.sys.scale.width / 2, this.sys.scale.height - 300, "Start Game").setOrigin(0.5).setDepth(2);
+  var startbuttonText = this.add
+    .text(this.sys.scale.width / 2, this.sys.scale.height - 300, "Start Game")
+    .setOrigin(0.5)
+    .setDepth(2);
   // Instruction Text
-  var instructions = ["Use A or W or Arrows to move",
-                      "",
-                      "Help the Astronaut avoid the meteors"];
+  var instructions = [
+    "Use A or W or Arrows to move",
+    "",
+    "Help the Astronaut avoid the meteors",
+  ];
   var instructionsText = this.add
     .text(this.sys.scale.width / 2, this.sys.scale.height - 230, instructions)
     .setOrigin(0.5)
@@ -54,8 +65,8 @@ function create() {
   // Pause physics logic
   this.physics.pause();
   // Run game on button click
-  startButtonBox.on('pointerdown', () => {
-    this.sound.pauseAll();  
+  startButtonBox.on("pointerdown", () => {
+    this.sound.pauseAll();
     this.background.destroy();
     startButtonBox.destroy();
     startbuttonText.destroy();
@@ -69,16 +80,16 @@ function create() {
   });
 
   // Hover button properties
-  startButtonBox.on('pointerover', () => {
-      startButtonBox.setFillStyle(0x000000, 1);
-      this.input.setDefaultCursor('pointer');
+  startButtonBox.on("pointerover", () => {
+    startButtonBox.setFillStyle(0x000000, 1);
+    this.input.setDefaultCursor("pointer");
   });
 
-  startButtonBox.on('pointerout', () => {
-      startButtonBox.setFillStyle(0x222222, 1);
-      this.input.setDefaultCursor('default');
+  startButtonBox.on("pointerout", () => {
+    startButtonBox.setFillStyle(0x222222, 1);
+    this.input.setDefaultCursor("default");
   });
-  
+
   //====================================================
   // Tela de Gameplay
   //====================================================
@@ -86,27 +97,29 @@ function create() {
     .image(300, 2000, "fundo")
     .setScale(4)
     .setDepth(1)
-    .setVelocityY(-400); 
+    .setVelocityY(-400);
 
   // Adiciona o efeito de partículas rosa ao personagem
-  // Obs: É necessário consultar a API para verificar os atributos comentados 
-  this.flame = this.add.particles(0, 0, "red", { 
-    //frame: 'white',
-    color: [0xc90076, 0xc27ba0, 0x9f0404],
-    colorEase: "quad.out",
-    //lifespan: 2400,
-    angle: { min: -100, max: -80 },
-    scale: { start: 0.4, end: 0, ease: "sine.out" },
-    speed: 100,
-    //advance: 2000,
-    blendMode: "ADD"
-  }).setDepth(1);
+  // Obs: É necessário consultar a API para verificar os atributos comentados
+  this.flame = this.add
+    .particles(0, 0, "red", {
+      //frame: 'white',
+      color: [0xc90076, 0xc27ba0, 0x9f0404],
+      colorEase: "quad.out",
+      //lifespan: 2400,
+      angle: { min: -100, max: -80 },
+      scale: { start: 0.4, end: 0, ease: "sine.out" },
+      speed: 100,
+      //advance: 2000,
+      blendMode: "ADD",
+    })
+    .setDepth(1);
 
   // Cria um grupo de objetos Ovni (Não usado - verificar atributos de grupos)
   // var ovni = this.physics.add.group({ // Permite adicionar mais da mesma imagem
   //   defaultKey: "ovni",
   //   collideWorldBounds: false,
-  // }); 
+  // });
   // // Cria um objeto Ovni
   // ovni.create(100, 200)
   //     .setScale(0.5)
@@ -114,7 +127,7 @@ function create() {
   //     .setOffset(0, 0)
   //     .setDepth(1)
   //     .setGravity(0, -300)
-  //     .setMaxVelocity(0, 400); 
+  //     .setMaxVelocity(0, 400);
 
   // Cria um objeto Meteoro
   var meteoro = this.physics.add
@@ -125,7 +138,7 @@ function create() {
     .setDepth(1)
     .setGravity(0, -300)
     .setMaxVelocity(0, 400); // Cria o elemento de meteoro
-  
+
   // Cria um objeto Ovni
   var ovni = this.physics.add
     .image(400, 800, "ovni")
@@ -156,7 +169,7 @@ function create() {
     .setDepth(1)
     .setMaxVelocity(600, 600); //cria o personagem
   personagem.setCollideWorldBounds(true); //personagem não sair para fora da plataforma
-  
+
   this.fundo = fundo; //atribui o fundo a uma variável
   this.meteoro = meteoro; //atribui o meteoro a uma variável
   this.personagem = personagem; //atribui o personagem a uma variavel
@@ -196,7 +209,7 @@ function create() {
     null,
     this,
   );
-  
+
   // Adição de sobreposição entre objetos Geleia e Personagem
   this.physics.add.overlap(
     this.geleia,
@@ -212,23 +225,33 @@ function create() {
   // Tela de Game Over
   //====================================================
   // Criação do Reset Button - Game Over
-  const buttonBox = this.add.rectangle(this.sys.scale.width / 2, this.sys.scale.height - 300, 290, 50, 0x000000, 1);
+  const buttonBox = this.add.rectangle(
+    this.sys.scale.width / 2,
+    this.sys.scale.height - 300,
+    290,
+    50,
+    0x000000,
+    1,
+  );
   buttonBox.setInteractive().setDepth(1);
-  const buttonText = this.add.text(this.sys.scale.width / 2, this.sys.scale.height - 300, "Restart").setOrigin(0.5).setDepth(1);
+  const buttonText = this.add
+    .text(this.sys.scale.width / 2, this.sys.scale.height - 300, "Restart")
+    .setOrigin(0.5)
+    .setDepth(1);
 
-  buttonBox.on('pointerdown', () => {
-      this.scene.restart();
+  buttonBox.on("pointerdown", () => {
+    this.scene.restart();
   });
-  
+
   // Hover on reset button properties
-  buttonBox.on('pointerover', () => {
-      buttonBox.setFillStyle(0x222222, 1); // Muda cor botão para cinza
-      this.input.setDefaultCursor('pointer'); // Muda ícone do mouse para mãozinha
+  buttonBox.on("pointerover", () => {
+    buttonBox.setFillStyle(0x222222, 1); // Muda cor botão para cinza
+    this.input.setDefaultCursor("pointer"); // Muda ícone do mouse para mãozinha
   });
 
-  buttonBox.on('pointerout', () => {
-      buttonBox.setFillStyle(0x000000, 1); // Muda cor do botão para branco
-      this.input.setDefaultCursor('default'); // Muda ícone do mouse para seta
+  buttonBox.on("pointerout", () => {
+    buttonBox.setFillStyle(0x000000, 1); // Muda cor do botão para branco
+    this.input.setDefaultCursor("default"); // Muda ícone do mouse para seta
   });
 
   // Hide Button
@@ -261,33 +284,33 @@ function update() {
     // senão se a seta direita ou 'd' for pressionada
     personagem.setVelocityX(300); //personagem move para a direita, com velocidade de 300 pixels por segundo
   }
-  
+
   // Ajusta a velocidade do fundo e reseta ao chegar ao final
   if (fundo.y < -1600) {
     fundo.y = 2000;
   }
-  
+
   // Ajuste da posição do meteoro
   if (meteoro.y <= -50) {
-      meteoro.setY(Phaser.Math.Between(850, 950)); // meteoro volta para baixo
-      meteoro.setX(Phaser.Math.Between(20, 580)); // posição aleatória do meteoro
+    meteoro.setY(Phaser.Math.Between(850, 950)); // meteoro volta para baixo
+    meteoro.setX(Phaser.Math.Between(20, 580)); // posição aleatória do meteoro
   }
   // Ajuste da posição do ovni
   if (ovni.y <= -50) {
-      ovni.setY(850); // meteoro volta para baixo
-      ovni.setX(Phaser.Math.Between(20, 580)); // posição aleatória do meteoro
+    ovni.setY(850); // meteoro volta para baixo
+    ovni.setX(Phaser.Math.Between(20, 580)); // posição aleatória do meteoro
   }
   // Ajuste da posição da geleia
   if (geleia.y <= -50) {
-      geleia.setAlpha(1);
-      geleia.setY(Phaser.Math.Between(850, 1050)); // meteoro volta para baixo
-      geleia.setX(Phaser.Math.Between(50, 550)); // posição aleatória do meteoro
+    geleia.setAlpha(1);
+    geleia.setY(Phaser.Math.Between(850, 1050)); // meteoro volta para baixo
+    geleia.setX(Phaser.Math.Between(50, 550)); // posição aleatória do meteoro
   }
 
   // Teste de Game Over
   if (vida <= 0) {
     this.add
-      .text(this.sys.scale.width / 2, this.sys.scale.height - 370,  "Game Over")
+      .text(this.sys.scale.width / 2, this.sys.scale.height - 370, "Game Over")
       .setOrigin(0.5)
       // .setFontSize(64)
       .setDepth(1)
@@ -299,7 +322,6 @@ function update() {
     this.sound.pauseAll(); // Pausa todos os áudios
     buttonBox.setAlpha(1); // Mostra a caixa do botão de reset
     buttonText.setAlpha(1); // Mostra o texto do botão de reset
-    
   }
 
   // Ajusta a vida para adições acima do máximo
@@ -319,7 +341,7 @@ function reduceLife() {
 }
 
 // Função para limpar a cor do personagem
-function clearTint(){
+function clearTint() {
   this.personagem.clearTint(); // Reseta a cor
   this.personagem.setScale(0.5); // Reseta o tamanho (feedback de hit)
 }
@@ -334,10 +356,13 @@ function powerUp() {
   // this.geleia.setAlpha(0);
   // this.geleia.destroy();
   this.geleia.disableBody(true, true);
-  this.geleia.enableBody(true,
-                         Phaser.Math.Between(50, 550), // Random x
-                         Phaser.Math.Between(1000, 1150), // Random y
-                         true, true);
+  this.geleia.enableBody(
+    true,
+    Phaser.Math.Between(50, 550), // Random x
+    Phaser.Math.Between(1000, 1150), // Random y
+    true,
+    true,
+  );
 }
 
 // Configurações passadas para Phaser.Game
@@ -354,18 +379,18 @@ const config = {
       gravity: {
         y: 0, //gravidade
       },
-      debug: true,
+      debug: false,
     },
   },
   scene: {
     extend: {
-      reduceLife: reduceLife,// <- function added to the scene
+      reduceLife: reduceLife, // <- function added to the scene
       powerUp: powerUp,
-      clearTint: clearTint
+      clearTint: clearTint,
     },
     preload: preload,
     create: create,
-    update: update
+    update: update,
   },
 };
 
