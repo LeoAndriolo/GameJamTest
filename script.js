@@ -102,22 +102,19 @@ function create() {
     blendMode: "ADD"
   }).setDepth(1);
 
-  // Cria um grupo de objetos Ovni
-  var ovni = this.physics.add.group({ // Permite adicionar mais da mesma imagem
-    defaultKey: "ovni",
-    collideWorldBounds: false,
-  }); 
-  // Cria um objeto Meteoro
-  ovni.create(100, 200)
-      .setGravity(0, -300)
-      .setScale(0.5)
-      .setDepth(1)
-      .setSize(160, 5) // Tamanho da colisão
-      .setOffset(0, 0)
-      .setDepth(1)
-      .setGravity(0, -300)
-      .setMaxVelocity(0, 400); 
-  // ovni.create(500, 250).setGravity(0, -300).setScale(0.75); //cria o ovni
+  // Cria um grupo de objetos Ovni (Não usado - verificar atributos de grupos)
+  // var ovni = this.physics.add.group({ // Permite adicionar mais da mesma imagem
+  //   defaultKey: "ovni",
+  //   collideWorldBounds: false,
+  // }); 
+  // // Cria um objeto Ovni
+  // ovni.create(100, 200)
+  //     .setScale(0.5)
+  //     .setSize(160, 5) // Tamanho da colisão
+  //     .setOffset(0, 0)
+  //     .setDepth(1)
+  //     .setGravity(0, -300)
+  //     .setMaxVelocity(0, 400); 
 
   // Cria um objeto Meteoro
   var meteoro = this.physics.add
@@ -128,10 +125,20 @@ function create() {
     .setDepth(1)
     .setGravity(0, -300)
     .setMaxVelocity(0, 400); // Cria o elemento de meteoro
+  
+  // Cria um objeto Ovni
+  var ovni = this.physics.add
+    .image(400, 800, "ovni")
+    .setScale(0.75)
+    .setSize(160, 5) // Tamanho da colisão
+    .setOffset(0, 0)
+    .setDepth(1)
+    .setGravity(0, -300)
+    .setMaxVelocity(0, 400); // Cria o elemento de meteoro
 
   // Cria um objeto Geleia
   var geleia = this.physics.add
-    .image(400, 800, "geleia")
+    .image(400, 1000, "geleia")
     .setScale(0.75)
     .setSize(80, 40)
     .setOffset(0, 0)
@@ -171,7 +178,6 @@ function create() {
   // Inicialização da variável de Vida do Personagem
   this.vida = 3;
   this.textVidas = this.add.text(16, 16, "Vida: " + this.vida).setDepth(1);
-  // this.vida = vida;
 
   // Adição de sobreposição entre objetos Meteoro e Personagem
   this.physics.add.overlap(
@@ -202,7 +208,10 @@ function create() {
 
   this.flame.startFollow(personagem); // Adiciona rastro rosa ao personagem
 
-  // Reset Button
+  //====================================================
+  // Tela de Game Over
+  //====================================================
+  // Criação do Reset Button - Game Over
   const buttonBox = this.add.rectangle(this.sys.scale.width / 2, this.sys.scale.height - 300, 290, 50, 0x000000, 1);
   buttonBox.setInteractive().setDepth(1);
   const buttonText = this.add.text(this.sys.scale.width / 2, this.sys.scale.height - 300, "Restart").setOrigin(0.5).setDepth(1);
@@ -211,7 +220,7 @@ function create() {
       this.scene.restart();
   });
   
-  // Hover button properties
+  // Hover on reset button properties
   buttonBox.on('pointerover', () => {
       buttonBox.setFillStyle(0x222222, 1); // Muda cor botão para cinza
       this.input.setDefaultCursor('pointer'); // Muda ícone do mouse para mãozinha
@@ -223,46 +232,59 @@ function create() {
   });
 
   // Hide Button
-  buttonBox.setAlpha(0);
+  buttonBox.setAlpha(0); // Checar setAlpha na API
   buttonText.setAlpha(0);
 
   this.buttonBox = buttonBox;
   this.buttonText = buttonText;
 }
 
+// Update - função que é chamada em cada frame do jogo
+
 function update() {
+  // Atribuição de variáveis
   var fundo = this.fundo;
   let cursors = this.input.keyboard.createCursorKeys(); //cria as setas do teclado
   var personagem = this.personagem; //atribui o personagem a uma variavel
   var meteoro = this.meteoro; //atribui o meteoro a uma variavel
+  var ovni = this.ovni; //atribui o meteoro a uma variavel
   var buttonBox = this.buttonBox;
   var buttonText = this.buttonText;
   var geleia = this.geleia;
   var vida = this.vida;
-  
+
+  // Movimentação do Personagem
   if (cursors.left.isDown || this.a.isDown) {
-    //se a seta esquerda ou a for pressionada
+    //se a seta esquerda ou 'a' for pressionada
     personagem.setVelocityX(-300); //personagem move para a esquerda, com velocidade de 300 pixels por segundo
   } else if (cursors.right.isDown || this.d.isDown) {
-    // senão se a seta direita ou d for pressionada
+    // senão se a seta direita ou 'd' for pressionada
     personagem.setVelocityX(300); //personagem move para a direita, com velocidade de 300 pixels por segundo
   }
   
-  // Ajusta a velocidade do fundo
+  // Ajusta a velocidade do fundo e reseta ao chegar ao final
   if (fundo.y < -1600) {
     fundo.y = 2000;
   }
-  // Ajusta a posição do meteoro
+  
+  // Ajuste da posição do meteoro
   if (meteoro.y <= -50) {
-    meteoro.setY(850); // meteoro volta para baixo
-    meteoro.setX(Phaser.Math.Between(50, 550)); // posição aleatória do meteoro
+      meteoro.setY(Phaser.Math.Between(850, 950)); // meteoro volta para baixo
+      meteoro.setX(Phaser.Math.Between(20, 580)); // posição aleatória do meteoro
   }
+  // Ajuste da posição do ovni
+  if (ovni.y <= -50) {
+      ovni.setY(850); // meteoro volta para baixo
+      ovni.setX(Phaser.Math.Between(20, 580)); // posição aleatória do meteoro
+  }
+  // Ajuste da posição da geleia
   if (geleia.y <= -50) {
-    geleia.setAlpha(1);
-    geleia.setY(Phaser.Math.Between(850, 1050)); // meteoro volta para baixo
-    geleia.setX(Phaser.Math.Between(50, 550)); // posição aleatória do meteoro
+      geleia.setAlpha(1);
+      geleia.setY(Phaser.Math.Between(850, 1050)); // meteoro volta para baixo
+      geleia.setX(Phaser.Math.Between(50, 550)); // posição aleatória do meteoro
   }
 
+  // Teste de Game Over
   if (vida <= 0) {
     this.add
       .text(this.sys.scale.width / 2, this.sys.scale.height - 370,  "Game Over")
@@ -273,36 +295,36 @@ function update() {
       .setColor("#e00434")
       .setFont("40px Arial")
       .setAlign("center");
-
-    
-    this.physics.pause();
-    this.sound.pauseAll();
-    buttonBox.setAlpha(1);
-    buttonText.setAlpha(1);
+    this.physics.pause(); // Pausa a física
+    this.sound.pauseAll(); // Pausa todos os áudios
+    buttonBox.setAlpha(1); // Mostra a caixa do botão de reset
+    buttonText.setAlpha(1); // Mostra o texto do botão de reset
     
   }
 
+  // Ajusta a vida para adições acima do máximo
   if (vida > 3) {
     this.vida = 3;
     this.textVidas.setText("Vida: " + this.vida);
   }
-  
 }
 
+// Função que reduz a vida
 function reduceLife() {
   this.vida--;
   this.textVidas.setText("Vida: " + this.vida);
   this.personagem.setTint(0xff00ff, 0xff0000);
   this.personagem.setScale(0.55);
   this.time.delayedCall(300, this.clearTint, [], this);
-
 }
 
+// Função para limpar a cor do personagem
 function clearTint(){
-  this.personagem.clearTint();
-  this.personagem.setScale(0.5);
+  this.personagem.clearTint(); // Reseta a cor
+  this.personagem.setScale(0.5); // Reseta o tamanho (feedback de hit)
 }
 
+// Função que aumenta a vida
 function powerUp() {
   this.vida++;
   this.textVidas.setText("Vida: " + this.vida);
@@ -318,15 +340,7 @@ function powerUp() {
                          true, true);
 }
 
-// function flashColor(color) {
-//     this.setTint(color);
-//     this.scene.time.addEvent({
-//            delay: 500,
-//            callback: function(){ this.clearTint(); },
-//            callbackScope: this,
-//         });
-// }
-
+// Configurações passadas para Phaser.Game
 const config = {
   type: Phaser.AUTO, // Canva ou WebGL
   width: 600, //largura
@@ -355,4 +369,5 @@ const config = {
   },
 };
 
+// Cria o jogo
 const game = new Phaser.Game(config);
