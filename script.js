@@ -1,3 +1,5 @@
+// Preload - function that is called before the game starts to load assets
+
 function preload() {
   // Imagens
   this.load.image("background", "assets/background.png");
